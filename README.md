@@ -3,3 +3,6 @@ GET  /file/query
 GET  /file/download
 POST /file/delete
 POST /file/update
+```gotemplate
+sha1sum ファイアpath
+```

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"filestor-serve/meta"
 	"filestor-serve/util"
 	"fmt"
@@ -59,4 +60,17 @@ func UploadHandler(w http.ResponseWriter, r *http.Request)  {
 // アップロード完了の知らせ用
 func UploadSucHandler(w http.ResponseWriter, r *http.Request)  {
 	io.WriteString(w, "Upload finished!")
+}
+
+// アプロード完了したファイアのデータを取得
+func GetFileMetaHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	filehash := r.Form["filehash"][0]
+	fMeta := meta.GetFileMeta(filehash)
+	data, err := json.Marshal(fMeta)
+	if err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
 }
