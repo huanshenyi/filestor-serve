@@ -1,5 +1,7 @@
 package meta
 
+import "sort"
+
 // ファイル要素構造
 type FileMeta struct {
 	FileSha1 string //ファイルの唯一のシンボル(ID)
@@ -23,4 +25,14 @@ func UpdateFileMeta(fmeta FileMeta){
 // GetFileMeta:sha1を通して、ファイルの元データを取得
 func GetFileMeta(fileSha1 string)FileMeta {
 	return fileMetas[fileSha1]
+}
+
+// 複数のfileMetaを並べて返す
+func GetLastFileMetas(count int) []FileMeta {
+	var fMetaArray []FileMeta
+	for _, v := range fileMetas{
+		fMetaArray = append(fMetaArray, v)
+	}
+	sort.Sort(ByUploadTime(fMetaArray))
+	return fMetaArray[0:count]
 }
