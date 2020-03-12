@@ -88,3 +88,27 @@ func FileQueryHandler(w http.ResponseWriter, r *http.Request)  {
 	}
 	w.Write(data)
 }
+
+// ファイアをダウンロード
+func DownloadHandler(w http.ResponseWriter, r *http.Request)  {
+	r.ParseForm()
+	fsha1 := r.Form.Get("filehash")
+	fm := meta.GetFileMeta(fsha1)
+	f, err := os.Open(fm.Location)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer f.Close()
+	data, err := ioutil.ReadAll(f)
+    if err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	// httpのheatを設定して、ブラウザがダウンロードできるようにする
+	w.Header().Set("Content-Type", "application/octect-stream")
+	w.Header().Set("Content-Disposition", "attachment;filename=\""+fm.FileName+"\"")
+
+	w.Write(data)
+
+}
