@@ -110,5 +110,48 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Disposition", "attachment;filename=\""+fm.FileName+"\"")
 
 	w.Write(data)
+}
+// ファイア内容を更新する(rename)
+func FileMetaUpdateHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	// opは操作のタイプ 0=rename, 1=その他
+	opType := r.Form.Get("op")
+	fileSha1 := r.Form.Get("filehash")
+	newFileName := r.Form.Get("filename")
 
+	if opType != "0"{
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	if r.Method != "POST"{
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	curFileMeta := meta.GetFileMeta(fileSha1)
+	curFileMeta.FileName = newFileName
+	meta.UpdateFileMeta(curFileMeta)
+
+	data, err := json.Marshal(curFileMeta)
+	if err != nil{
+        w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+// ファイルを削除
+func FileDeleteHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	fileSha1 := r.Form.Get("filehash")
+	fMeta := meta.GetFileMeta(fileSha1)
+
+	err := os.Remove(fMeta.Location)
+	if err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	meta.RemoveFileMeta(fileSha1)
+	w.WriteHeader(http.StatusOK)
 }
