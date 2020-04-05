@@ -1,6 +1,9 @@
 package meta
 
-import "sort"
+import (
+	"filestor-serve/db"
+	"sort"
+)
 
 // ファイル要素構造
 type FileMeta struct {
@@ -20,6 +23,27 @@ func init()  {
 // UpdateFileMeta: 新規追加，更新ファイルの元データ
 func UpdateFileMeta(fmeta FileMeta){
     fileMetas[fmeta.FileSha1] = fmeta
+}
+
+// UpdateFileMetaDB:ファイルのメタデータの更新をmysqlへ保存
+func UpdateFileMetaDB(fmeta FileMeta) bool {
+	return db.OnFileUploadFinished(
+		fmeta.FileSha1, fmeta.FileName, fmeta.FileSize, fmeta.Location)
+}
+
+// GetFileMetaDB: mysqlからファイルデータを取得
+func GetFileMetaDB(fileSha1 string) (FileMeta, error) {
+	tfile, err := db.GetFileMeta(fileSha1)
+	if err != nil{
+		return FileMeta{}, nil
+	}
+	fmeta := FileMeta{
+		FileSha1: tfile.FileHash,
+		FileName: tfile.FileName.String,
+		FileSize: tfile.FileSize.Int64,
+		Location: tfile.FileAddr.String,
+	}
+	return fmeta, nil
 }
 
 // GetFileMeta:sha1を通して、ファイルの元データを取得
