@@ -14,6 +14,8 @@ func main()  {
     http.HandleFunc("/file/download", controller.DownloadHandler)
     http.HandleFunc("/file/update", controller.FileMetaUpdateHandler)
     http.HandleFunc("/file/delete", controller.FileDeleteHandler)
+
+    http.HandleFunc("/user/signup", controller.SignupHandler)
     err := http.ListenAndServe(":5000", nil)
     if err != nil{
     	fmt.Printf("Failed to start server, err:%s",err)
