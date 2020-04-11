@@ -16,6 +16,7 @@ func main()  {
     http.HandleFunc("/file/delete", controller.FileDeleteHandler)
 
     http.HandleFunc("/user/signup", controller.SignupHandler)
+    http.HandleFunc("/user/signin", controller.SignlnHandler)
     err := http.ListenAndServe(":5000", nil)
     if err != nil{
     	fmt.Printf("Failed to start server, err:%s",err)

@@ -25,3 +25,42 @@ func UserSignup(username string, passwd string) bool {
 	}
 	return false
 }
+
+// パスワード一致かの判断
+func UserSignin(username string, encpwd string) bool {
+	stmt, err := mysql.DBConn().Prepare("select * from tbl_user where user_name=? limit 1")
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	rows,err := stmt.Query(username)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}else if rows == nil {
+		fmt.Println("username not found:" + username)
+		return false
+	}
+
+	pRows := mysql.ParseRows(rows)
+	if len(pRows) > 0 && string(pRows[0]["user_pwd"].([]byte)) == encpwd {
+		return true
+	}
+	return false
+}
+
+//アクセスtokenの保存と更新
+func UpdateToken(username string, token string) bool {
+  stmt, err := mysql.DBConn().Prepare("replace into tbl_user_token (`user_name`, `user_token`) values (?, ?)")
+  if err != nil {
+  	fmt.Println(err.Error())
+  	return false
+  }
+  defer stmt.Close()
+  _, err = stmt.Exec(username, token)
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+  }
+  return true
+}
