@@ -65,8 +65,14 @@ func SignlnHandler(w http.ResponseWriter, r *http.Request){
 	  return
   }
   // 3. ホームページへリダイレクト
-  w.Write([]byte("http://"+r.Host+"/static/view/home.html"))
-
+  //w.Write([]byte("http://"+r.Host+"/static/view/home.html"))
+  resp := util.RespMsg{
+	  Code: 0,
+	  Msg:  "OK",
+	  Data: struct {
+		  Location string
+	  }{},
+  }
 }
 
 // Tokenを生成
