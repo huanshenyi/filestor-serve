@@ -17,6 +17,8 @@ func main()  {
 
     http.HandleFunc("/user/signup", controller.SignupHandler)
     http.HandleFunc("/user/signin", controller.SignlnHandler)
+    http.HandleFunc("/user/info", controller.UserInfoHandler)
+
     err := http.ListenAndServe(":5000", nil)
     if err != nil{
     	fmt.Printf("Failed to start server, err:%s",err)
